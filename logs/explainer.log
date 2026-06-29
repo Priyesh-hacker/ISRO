@@ -1,0 +1,11 @@
+2026-06-29 08:10:28.111 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:15:33.362 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:20:37.824 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:25:42.002 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:30:46.044 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:35:50.585 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:40:54.884 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:45:58.894 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:50:08.009 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 08:55:12.123 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 09:00:15.826 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
