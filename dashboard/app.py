@@ -2,11 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-import sqlite3
 import sys
 sys.path.append("..")
-from config import DB_PATH, FORECAST_HORIZONS, THRESHOLDS
-from database.db import fetch_latest_observation, fetch_observations
+from config import FORECAST_HORIZONS, THRESHOLDS
+from database.supabase_client import fetch_latest_observation, fetch_all_observations, fetch_alerts
 from features.engineer import classify_risk, engineer_features
 from ollama.explainer import explain_forecast, format_predictions
 from models.baseline_xgb import predict_xgb
@@ -29,14 +28,8 @@ def get_risk_color(risk: str) -> str:
     return RISK_COLORS.get(risk, "#95a5a6")
 
 def load_recent_data(n=200) -> pd.DataFrame:
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql(f"""
-        SELECT * FROM raw_observations
-        ORDER BY timestamp DESC
-        LIMIT {n}
-    """, conn)
-    conn.close()
-    return df.sort_values("timestamp")
+    df = fetch_all_observations(limit=n)
+    return df
 
 # ---- Header ----
 st.title("🛰️ ISRO Geostationary Satellite Radiation Monitor")
@@ -160,9 +153,7 @@ with tab3:
 # ---- Alert log ----
 st.markdown("---")
 st.subheader("🚨 Alert Log")
-conn = sqlite3.connect(DB_PATH)
-alerts = pd.read_sql("SELECT * FROM alert_log ORDER BY triggered_at DESC LIMIT 20", conn)
-conn.close()
+alerts = fetch_alerts(limit=20)
 if alerts.empty:
     st.info("No alerts triggered yet.")
 else:

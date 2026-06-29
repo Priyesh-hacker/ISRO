@@ -19,6 +19,16 @@ def upsert_observations(df: pd.DataFrame):
     except Exception as e:
         logger.error(f"Supabase upsert failed: {e}")
 
+def insert_storm_events(df: pd.DataFrame):
+    if df.empty:
+        return
+    records = df.to_dict(orient="records")
+    try:
+        supabase.table("storm_events").insert(records).execute()
+        logger.info(f"Inserted {len(records)} storm events to Supabase")
+    except Exception as e:
+        logger.error(f"Storm events insert failed: {e}")
+
 def insert_prediction(created_at, horizon, flux, risk, confidence, model_type="XGBoost"):
     try:
         supabase.table("model_predictions").insert({
@@ -52,8 +62,36 @@ def fetch_latest_observation() -> dict:
         logger.error(f"Fetch latest failed: {e}")
         return {}
 
+def fetch_alerts(limit=20) -> pd.DataFrame:
+    try:
+        res = supabase.table("alert_log").select("*").order("triggered_at", desc=True).limit(limit).execute()
+        return pd.DataFrame(res.data)
+    except Exception as e:
+        logger.error(f"Fetch alerts failed: {e}")
+        return pd.DataFrame()
+
+def fetch_all_observations(limit=100000) -> pd.DataFrame:
+    try:
+        res = supabase.table("raw_observations").select("*").order("timestamp", desc=True).limit(limit).execute()
+        df = pd.DataFrame(res.data)
+        if not df.empty:
+            df = df.sort_values("timestamp")
+        return df
+    except Exception as e:
+        logger.error(f"Fetch observations failed: {e}")
+        return pd.DataFrame()
+
+def fetch_storm_events() -> pd.DataFrame:
+    try:
+        res = supabase.table("storm_events").select("*").eq("event_type", "GST").order("event_time").execute()
+        return pd.DataFrame(res.data)
+    except Exception as e:
+        logger.error(f"Fetch storm events failed: {e}")
+        return pd.DataFrame()
+
 def fetch_recent_observations(hours=24) -> pd.DataFrame:
     try:
+        # Assuming there is a view named recent_observations, otherwise we can change it to query raw_observations.
         res = supabase.table("recent_observations").select("*").execute()
         return pd.DataFrame(res.data)
     except Exception as e:

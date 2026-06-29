@@ -4,7 +4,7 @@ from loguru import logger
 import sys
 sys.path.append("..")
 from config import FORECAST_HORIZONS, THRESHOLDS
-from database.db import fetch_observations
+from database.supabase_client import fetch_all_observations
 
 logger.add("logs/engineer.log", rotation="1 MB")
 
@@ -80,7 +80,7 @@ def get_feature_columns(df: pd.DataFrame) -> list:
     return [c for c in df.columns if c not in exclude]
 
 def load_and_engineer() -> pd.DataFrame:
-    raw = fetch_observations(limit=100000)
+    raw = fetch_all_observations(limit=100000)
     if raw.empty:
         logger.error("No data in DB — run omniweb_fetcher.py first")
         return pd.DataFrame()

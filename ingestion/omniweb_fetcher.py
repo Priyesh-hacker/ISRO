@@ -5,7 +5,7 @@ from loguru import logger
 import sys
 sys.path.append("..")
 from config import OMNIWEB_URL, TRAIN_START_YEAR, TRAIN_END_YEAR
-from database.db import insert_observations
+from database.supabase_client import upsert_observations
 
 logger.add("logs/omniweb_fetcher.log", rotation="1 MB")
 
@@ -96,7 +96,7 @@ def fetch_historical(start_year=TRAIN_START_YEAR, end_year=TRAIN_END_YEAR):
     combined = combined.drop_duplicates(subset=["timestamp"])
 
     # Store in DB
-    insert_observations(combined)
+    upsert_observations(combined)
     logger.info(f"Total historical rows stored: {len(combined)}")
     print(f"\nDone. Total rows: {len(combined)}")
     return combined

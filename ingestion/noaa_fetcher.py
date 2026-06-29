@@ -8,7 +8,7 @@ from config import (
     NOAA_SOLAR_WIND_URL, NOAA_KP_URL,
     NOAA_PROTON_URL, NOAA_ELECTRON_URL
 )
-from database.db import insert_observations
+from database.supabase_client import upsert_observations
 
 logger.add("logs/noaa_fetcher.log", rotation="1 MB")
 
@@ -84,7 +84,7 @@ def fetch_and_store():
     }
 
     df = pd.DataFrame([row])
-    insert_observations(df)
+    upsert_observations(df)
     logger.info(f"Stored NOAA observation at {row['timestamp']}")
 
 if __name__ == "__main__":

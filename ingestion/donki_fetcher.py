@@ -4,7 +4,8 @@ import sqlite3
 from loguru import logger
 import sys
 sys.path.append("..")
-from config import DONKI_BASE_URL, NASA_API_KEY, DB_PATH
+from config import DONKI_BASE_URL, NASA_API_KEY
+from database.supabase_client import insert_storm_events
 
 logger.add("logs/donki_fetcher.log", rotation="1 MB")
 
@@ -89,11 +90,7 @@ def fetch_solar_flares(start_date: str, end_date: str) -> pd.DataFrame:
 def store_events(df: pd.DataFrame):
     if df.empty:
         return
-    conn = sqlite3.connect(DB_PATH)
-    df.to_sql("storm_events", conn, if_exists="append", index=False)
-    conn.commit()
-    conn.close()
-    logger.info(f"Stored {len(df)} events")
+    insert_storm_events(df)
 
 def fetch_all_events(start_date="2018-01-01", end_date="2024-12-31"):
     gst = fetch_geomagnetic_storms(start_date, end_date)

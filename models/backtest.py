@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
-import sqlite3
 import sys
 sys.path.append("..")
-from config import DB_PATH, FORECAST_HORIZONS
+from config import FORECAST_HORIZONS
+from database.supabase_client import fetch_storm_events
 from features.engineer import load_and_engineer, get_feature_columns, classify_risk
 from models.baseline_xgb import predict_xgb, load_xgb
 from loguru import logger
@@ -11,14 +11,9 @@ from loguru import logger
 logger.add("logs/backtest.log", rotation="1 MB")
 
 def load_storm_events() -> pd.DataFrame:
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql("""
-        SELECT * FROM storm_events
-        WHERE event_type = 'GST'
-        ORDER BY event_time
-    """, conn)
-    conn.close()
-    df["event_time"] = pd.to_datetime(df["event_time"])
+    df = fetch_storm_events()
+    if not df.empty:
+        df["event_time"] = pd.to_datetime(df["event_time"])
     return df
 
 def run_backtest():
