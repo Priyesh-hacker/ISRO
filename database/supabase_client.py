@@ -3,6 +3,7 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 from loguru import logger
 import pandas as pd
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -12,6 +13,8 @@ key = os.getenv("SUPABASE_SERVICE_KEY")
 supabase: Client = create_client(url, key)
 
 def upsert_observations(df: pd.DataFrame):
+    if df.empty:
+        return
     records = df.to_dict(orient="records")
     try:
         supabase.table("raw_observations").upsert(records).execute()
@@ -56,7 +59,7 @@ def insert_alert(triggered_at, risk_level, predicted_flux, lead_time, explanatio
 
 def fetch_latest_observation() -> dict:
     try:
-        res = supabase.rpc("get_latest_observation").execute()
+        res = supabase.table("raw_observations").select("*").order("timestamp", desc=True).limit(1).execute()
         return res.data[0] if res.data else {}
     except Exception as e:
         logger.error(f"Fetch latest failed: {e}")
@@ -91,16 +94,20 @@ def fetch_storm_events() -> pd.DataFrame:
 
 def fetch_recent_observations(hours=24) -> pd.DataFrame:
     try:
-        # Assuming there is a view named recent_observations, otherwise we can change it to query raw_observations.
-        res = supabase.table("recent_observations").select("*").execute()
-        return pd.DataFrame(res.data)
+        # Fetch the most recent records equivalent to 24 hours (assuming 5 min intervals = 12 per hour)
+        limit = hours * 12
+        res = supabase.table("raw_observations").select("*").order("timestamp", desc=True).limit(limit).execute()
+        df = pd.DataFrame(res.data)
+        if not df.empty:
+            df = df.sort_values("timestamp")
+        return df
     except Exception as e:
         logger.error(f"Fetch recent failed: {e}")
         return pd.DataFrame()
 
 def fetch_latest_predictions() -> pd.DataFrame:
     try:
-        res = supabase.table("latest_predictions").select("*").execute()
+        res = supabase.table("model_predictions").select("*").order("created_at", desc=True).limit(20).execute()
         return pd.DataFrame(res.data)
     except Exception as e:
         logger.error(f"Fetch predictions failed: {e}")

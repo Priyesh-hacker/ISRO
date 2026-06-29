@@ -76,3 +76,13 @@
 2026-06-29 11:17:03.006 | INFO     | ingestion.noaa_fetcher:fetch_and_store:88 - Stored NOAA observation at 2026-06-28T11:14:35
 2026-06-29 11:17:27.114 | INFO     | database.supabase_client:upsert_observations:18 - Upserted 1 observations to Supabase
 2026-06-29 11:17:27.114 | INFO     | ingestion.noaa_fetcher:fetch_and_store:88 - Stored NOAA observation at 2026-06-28T11:14:35
+2026-06-29 11:21:51.472 | INFO     | database.supabase_client:upsert_observations:18 - Upserted 1 observations to Supabase
+2026-06-29 11:21:51.475 | INFO     | ingestion.noaa_fetcher:fetch_and_store:88 - Stored NOAA observation at 2026-06-28T11:21:00
+2026-06-29 11:22:03.058 | INFO     | database.supabase_client:upsert_observations:18 - Upserted 1 observations to Supabase
+2026-06-29 11:22:03.059 | INFO     | ingestion.noaa_fetcher:fetch_and_store:88 - Stored NOAA observation at 2026-06-28T11:21:00
+2026-06-29 11:22:27.691 | INFO     | database.supabase_client:upsert_observations:18 - Upserted 1 observations to Supabase
+2026-06-29 11:22:27.691 | INFO     | ingestion.noaa_fetcher:fetch_and_store:88 - Stored NOAA observation at 2026-06-28T11:21:00
+2026-06-29 11:26:51.576 | INFO     | database.supabase_client:upsert_observations:18 - Upserted 1 observations to Supabase
+2026-06-29 11:26:51.576 | INFO     | ingestion.noaa_fetcher:fetch_and_store:88 - Stored NOAA observation at 2026-06-28T11:24:00
+2026-06-29 11:27:02.993 | INFO     | database.supabase_client:upsert_observations:18 - Upserted 1 observations to Supabase
+2026-06-29 11:27:02.994 | INFO     | ingestion.noaa_fetcher:fetch_and_store:88 - Stored NOAA observation at 2026-06-28T11:24:00

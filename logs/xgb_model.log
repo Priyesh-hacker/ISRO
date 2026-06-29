@@ -9,3 +9,5 @@
 2026-06-29 08:50:08.009 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
 2026-06-29 08:55:12.123 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
 2026-06-29 09:00:15.826 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 11:18:27.903 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
+2026-06-29 11:23:31.777 | ERROR    | database.supabase_client:fetch_latest_observation:62 - Fetch latest failed: 0
