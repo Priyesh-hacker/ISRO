@@ -1,0 +1,9 @@
+2026-06-29 07:55:39.028 | INFO     | __main__:init_db:58 - Database initialized successfully
+2026-06-29 07:56:17.454 | INFO     | __main__:fetch_year:76 - Fetched 8769 rows for 2018
+2026-06-29 07:56:19.479 | INFO     | __main__:fetch_year:76 - Fetched 8769 rows for 2019
+2026-06-29 07:56:21.621 | INFO     | __main__:fetch_year:76 - Fetched 8793 rows for 2020
+2026-06-29 07:56:24.029 | INFO     | __main__:fetch_year:76 - Fetched 8769 rows for 2021
+2026-06-29 07:56:26.253 | INFO     | __main__:fetch_year:76 - Fetched 8769 rows for 2022
+2026-06-29 07:56:28.404 | INFO     | __main__:fetch_year:76 - Fetched 8769 rows for 2023
+2026-06-29 07:56:28.523 | INFO     | database.db:insert_observations:65 - Inserted 52585 observations
+2026-06-29 07:56:28.524 | INFO     | __main__:fetch_historical:100 - Total historical rows stored: 52585
