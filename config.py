@@ -22,7 +22,7 @@ DONKI_BASE_URL = "https://api.nasa.gov/DONKI"
 OMNIWEB_URL = "https://omniweb.gsfc.nasa.gov/cgi/nx1.cgi"
 
 # Ollama
-OLLAMA_MODEL = "qwen2.5:7b"
+OLLAMA_MODEL = "qwen2.5:3b"
 
 # Model settings
 SEQ_LEN = 24           # hours of history fed into LSTM
