@@ -17,8 +17,8 @@ else
     echo "Ollama started."
 fi
 
-echo "[3/4] Pulling qwen2.5:3b..."
-ollama pull qwen2.5:3b
+echo "[3/4] Pulling qwen2.5:0.5b..."
+ollama pull qwen2.5:0.5b
 
 echo "[4/4] Starting live ingestion & background tasks..."
 python main.py &

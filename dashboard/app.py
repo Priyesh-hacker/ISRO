@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import sys
 sys.path.append("..")
-from config import FORECAST_HORIZONS, THRESHOLDS
+from config import FORECAST_HORIZONS, THRESHOLDS, OLLAMA_MODEL
 from database.supabase_client import (
     fetch_latest_observation, fetch_all_observations, fetch_alerts,
     fetch_historical_bz_kp, fetch_noaa_realtime
@@ -106,9 +106,12 @@ border-radius:8px; background:{color}11;'>
         # ---- Ollama explanation ----
         st.subheader("🤖 AI Analyst Explanation")
         if st.button("Generate Explanation"):
-            with st.spinner("Asking qwen2.5:7b..."):
+            with st.spinner(f"Asking {OLLAMA_MODEL}..."):
                 explanation = explain_forecast(latest, predictions)
-                st.info(explanation)
+                if explanation.startswith("Explanation unavailable"):
+                    st.warning("⚠️ AI model is currently unavailable. Please try again shortly.")
+                else:
+                    st.info(explanation)
 
 st.markdown("---")
 
@@ -139,7 +142,7 @@ with tab1:
         xaxis_title="Time", yaxis_title="pfu",
         yaxis_type="log", yaxis=dict(range=[-2, 4])
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 with tab2:
     # OMNIWEB historical: complete hourly Bz coverage 2018-2023
@@ -156,7 +159,7 @@ with tab2:
         title="Bz Component — OMNIWEB Historical (last 31 days of 2023)",
         xaxis_title="Time", yaxis_title="nT"
     )
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width='stretch')
 
 with tab3:
     # OMNIWEB historical: complete hourly Kp coverage 2018-2023
@@ -175,7 +178,7 @@ with tab3:
         xaxis_title="Time", yaxis_title="Kp",
         yaxis=dict(range=[0, 10])
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width='stretch')
 
 # ---- Alert log ----
 st.markdown("---")
@@ -184,6 +187,6 @@ alerts = fetch_alerts(limit=20)
 if alerts.empty:
     st.info("No alerts triggered yet.")
 else:
-    st.dataframe(alerts, use_container_width=True)
+    st.dataframe(alerts, width='stretch')
 
 st.caption("Data sources: NOAA SWPC, NASA DONKI, NASA OMNIWeb, ISRO Aditya-L1")

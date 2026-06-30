@@ -25,8 +25,8 @@ try {
 }
 
 if ($running) {
-    Write-Host "[3/4] Pulling qwen2.5:3b..." -ForegroundColor Yellow
-    ollama pull qwen2.5:3b
+    Write-Host "[3/4] Pulling qwen2.5:0.5b..." -ForegroundColor Yellow
+    ollama pull qwen2.5:0.5b
 }
 
 Write-Host "[4/4] Starting live ingestion and dashboard..." -ForegroundColor Yellow
