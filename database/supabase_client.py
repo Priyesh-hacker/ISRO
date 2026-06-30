@@ -14,8 +14,12 @@ supabase: Client = create_client(url, key)
 def upsert_observations(df: pd.DataFrame):
     if df.empty:
         return
-    df_clean = df.where(pd.notnull(df), None)
-    records = df_clean.to_dict(orient="records")
+    records = df.to_dict(orient="records")
+    import math
+    for record in records:
+        for k, v in record.items():
+            if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                record[k] = None
     try:
         # Batch upsert 1000 rows at a time
         for i in range(0, len(records), 1000): 
@@ -27,8 +31,12 @@ def upsert_observations(df: pd.DataFrame):
 def insert_storm_events(df: pd.DataFrame):
     if df.empty:
         return
-    df_clean = df.where(pd.notnull(df), None)
-    records = df_clean.to_dict(orient="records")
+    records = df.to_dict(orient="records")
+    import math
+    for record in records:
+        for k, v in record.items():
+            if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                record[k] = None
     try:
         supabase.table("storm_events").insert(records).execute()
         logger.info(f"Inserted {len(records)} storm events to Supabase")
