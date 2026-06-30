@@ -7,7 +7,7 @@ sys.path.append("..")
 from config import FORECAST_HORIZONS, THRESHOLDS
 from database.supabase_client import fetch_latest_observation, fetch_all_observations, fetch_alerts
 from features.engineer import classify_risk, engineer_features
-from ollama.explainer import explain_forecast, format_predictions
+from ai_explainer.explainer import explain_forecast, format_predictions
 from models.baseline_xgb import predict_xgb
 
 st.set_page_config(
