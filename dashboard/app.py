@@ -115,23 +115,30 @@ st.subheader("📊 Historical Data")
 tab1, tab2, tab3 = st.tabs(["Proton Flux", "Bz & Solar Wind", "Kp Index"])
 
 with tab1:
+    df_flux = df_recent[["timestamp", "proton_flux"]].dropna()
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=df_recent["timestamp"], y=df_recent["proton_flux"],
-        name="Proton Flux", line=dict(color="#e74c3c")
+        x=df_flux["timestamp"], y=df_flux["proton_flux"],
+        name="Proton Flux", line=dict(color="#e74c3c"),
+        connectgaps=False
     ))
     for label, val in THRESHOLDS.items():
         fig.add_hline(y=val, line_dash="dash",
                       annotation_text=label, line_color="gray")
-    fig.update_layout(title="Proton Flux History", xaxis_title="Time",
-                      yaxis_title="pfu", yaxis_type="log")
+    fig.update_layout(
+        title="Proton Flux History", xaxis_title="Time",
+        yaxis_title="pfu", yaxis_type="log",
+        yaxis=dict(range=[-2, 4])  # log10 range: 0.01 to 10,000 pfu
+    )
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
+    df_bz = df_recent[["timestamp", "bz"]].dropna()
     fig2 = go.Figure()
     fig2.add_trace(go.Scatter(
-        x=df_recent["timestamp"], y=df_recent["bz"],
-        name="Bz (nT)", line=dict(color="#3498db")
+        x=df_bz["timestamp"], y=df_bz["bz"],
+        name="Bz (nT)", line=dict(color="#3498db"),
+        connectgaps=False
     ))
     fig2.add_hline(y=0, line_dash="solid", line_color="red", line_width=1)
     fig2.update_layout(title="Bz Component (negative = southward = dangerous)",
@@ -139,15 +146,20 @@ with tab2:
     st.plotly_chart(fig2, use_container_width=True)
 
 with tab3:
+    df_kp = df_recent[["timestamp", "kp_index"]].dropna()
     fig3 = go.Figure()
     fig3.add_trace(go.Scatter(
-        x=df_recent["timestamp"], y=df_recent["kp_index"],
-        name="Kp Index", line=dict(color="#9b59b6"), fill="tozeroy"
+        x=df_kp["timestamp"], y=df_kp["kp_index"],
+        name="Kp Index", line=dict(color="#9b59b6"), fill="tozeroy",
+        connectgaps=False
     ))
     fig3.add_hline(y=5, line_dash="dash", annotation_text="Storm threshold",
                    line_color="orange")
-    fig3.update_layout(title="Kp Geomagnetic Index",
-                       xaxis_title="Time", yaxis_title="Kp")
+    fig3.update_layout(
+        title="Kp Geomagnetic Index",
+        xaxis_title="Time", yaxis_title="Kp",
+        yaxis=dict(range=[0, 10])  # Kp is strictly 0-9
+    )
     st.plotly_chart(fig3, use_container_width=True)
 
 # ---- Alert log ----
