@@ -27,8 +27,8 @@ FILL_VALUES = {
     "solar_wind_speed": 9999.,
     "density": 999.9,
     "kp_index": 99.,
-    "proton_flux": 99999.9,
-    "electron_flux": 99999.9
+    "proton_flux": 99999.99,
+    "electron_flux": 99999.99
 }
 
 def fetch_year(year: int) -> pd.DataFrame:
