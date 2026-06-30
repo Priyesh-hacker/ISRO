@@ -129,6 +129,55 @@ def fetch_recent_observations(hours=24) -> pd.DataFrame:
         logger.error(f"Fetch recent failed: {e}")
         return pd.DataFrame()
 
+def fetch_historical_bz_kp(limit=744) -> pd.DataFrame:
+    """Fetch OMNIWEB historical observations (Bz & Kp source) ordered by timestamp.
+
+    OMNIWEB data runs from 2018-2023 and is the only source with complete
+    hourly Bz and Kp coverage. Returns the most recent ``limit`` rows from
+    the OMNIWEB_sourced records so the charts show a meaningful window.
+    Default 744 = 31 days of hourly data.
+    """
+    try:
+        res = (
+            supabase.table("raw_observations")
+            .select("timestamp,bz,kp_index,solar_wind_speed")
+            .eq("source", "OMNIWEB")
+            .order("timestamp", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        df = pd.DataFrame(res.data)
+        if not df.empty:
+            df = df.sort_values("timestamp")
+        return df
+    except Exception as e:
+        logger.error(f"Fetch historical Bz/Kp failed: {e}")
+        return pd.DataFrame()
+
+def fetch_noaa_realtime(limit=500) -> pd.DataFrame:
+    """Fetch the most recent NOAA_SWPC observations (proton flux / solar wind).
+
+    NOAA real-time data is stored every ~5 minutes. Returns the most recent
+    ``limit`` rows so the Proton Flux chart shows the last ~42 hours.
+    """
+    try:
+        res = (
+            supabase.table("raw_observations")
+            .select("timestamp,proton_flux,solar_wind_speed,density,bz,kp_index")
+            .eq("source", "NOAA_SWPC")
+            .order("timestamp", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        df = pd.DataFrame(res.data)
+        if not df.empty:
+            df = df.sort_values("timestamp")
+        return df
+    except Exception as e:
+        logger.error(f"Fetch NOAA realtime failed: {e}")
+        return pd.DataFrame()
+
+
 def fetch_latest_predictions() -> pd.DataFrame:
     try:
         res = supabase.table("model_predictions").select("*").order("created_at", desc=True).limit(20).execute()

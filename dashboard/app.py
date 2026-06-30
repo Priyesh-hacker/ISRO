@@ -5,7 +5,10 @@ import plotly.express as px
 import sys
 sys.path.append("..")
 from config import FORECAST_HORIZONS, THRESHOLDS
-from database.supabase_client import fetch_latest_observation, fetch_all_observations, fetch_alerts
+from database.supabase_client import (
+    fetch_latest_observation, fetch_all_observations, fetch_alerts,
+    fetch_historical_bz_kp, fetch_noaa_realtime
+)
 from features.engineer import classify_risk, engineer_features
 from ai_explainer.explainer import explain_forecast, format_predictions
 from models.baseline_xgb import predict_xgb
@@ -112,53 +115,65 @@ st.markdown("---")
 # ---- Time series chart ----
 st.subheader("📊 Historical Data")
 
+# Separate data sources: NOAA for real-time proton/wind, OMNIWEB for historical Bz/Kp
+df_noaa    = fetch_noaa_realtime(limit=500)      # last ~42 hrs of 5-min NOAA data
+df_omniweb = fetch_historical_bz_kp(limit=744)   # last 31 days of hourly OMNIWEB data
+
 tab1, tab2, tab3 = st.tabs(["Proton Flux", "Bz & Solar Wind", "Kp Index"])
 
 with tab1:
-    df_flux = df_recent[["timestamp", "proton_flux"]].dropna()
+    # NOAA real-time: has proton_flux, solar_wind_speed, density
+    df_flux = df_noaa[["timestamp", "proton_flux"]].dropna() if not df_noaa.empty else pd.DataFrame()
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=df_flux["timestamp"], y=df_flux["proton_flux"],
-        name="Proton Flux", line=dict(color="#e74c3c"),
-        connectgaps=False
-    ))
+    if not df_flux.empty:
+        fig.add_trace(go.Scatter(
+            x=df_flux["timestamp"], y=df_flux["proton_flux"],
+            name="Proton Flux", line=dict(color="#e74c3c"),
+            connectgaps=False
+        ))
     for label, val in THRESHOLDS.items():
         fig.add_hline(y=val, line_dash="dash",
                       annotation_text=label, line_color="gray")
     fig.update_layout(
-        title="Proton Flux History", xaxis_title="Time",
-        yaxis_title="pfu", yaxis_type="log",
-        yaxis=dict(range=[-2, 4])  # log10 range: 0.01 to 10,000 pfu
+        title="Proton Flux — NOAA Real-Time (last 42 hrs)",
+        xaxis_title="Time", yaxis_title="pfu",
+        yaxis_type="log", yaxis=dict(range=[-2, 4])
     )
     st.plotly_chart(fig, use_container_width=True)
 
 with tab2:
-    df_bz = df_recent[["timestamp", "bz"]].dropna()
+    # OMNIWEB historical: complete hourly Bz coverage 2018-2023
+    df_bz = df_omniweb[["timestamp", "bz"]].dropna() if not df_omniweb.empty else pd.DataFrame()
     fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(
-        x=df_bz["timestamp"], y=df_bz["bz"],
-        name="Bz (nT)", line=dict(color="#3498db"),
-        connectgaps=False
-    ))
+    if not df_bz.empty:
+        fig2.add_trace(go.Scatter(
+            x=df_bz["timestamp"], y=df_bz["bz"],
+            name="Bz GSM (nT)", line=dict(color="#3498db"),
+            connectgaps=False
+        ))
     fig2.add_hline(y=0, line_dash="solid", line_color="red", line_width=1)
-    fig2.update_layout(title="Bz Component (negative = southward = dangerous)",
-                       xaxis_title="Time", yaxis_title="nT")
+    fig2.update_layout(
+        title="Bz Component — OMNIWEB Historical (last 31 days of 2023)",
+        xaxis_title="Time", yaxis_title="nT"
+    )
     st.plotly_chart(fig2, use_container_width=True)
 
 with tab3:
-    df_kp = df_recent[["timestamp", "kp_index"]].dropna()
+    # OMNIWEB historical: complete hourly Kp coverage 2018-2023
+    df_kp = df_omniweb[["timestamp", "kp_index"]].dropna() if not df_omniweb.empty else pd.DataFrame()
     fig3 = go.Figure()
-    fig3.add_trace(go.Scatter(
-        x=df_kp["timestamp"], y=df_kp["kp_index"],
-        name="Kp Index", line=dict(color="#9b59b6"), fill="tozeroy",
-        connectgaps=False
-    ))
+    if not df_kp.empty:
+        fig3.add_trace(go.Scatter(
+            x=df_kp["timestamp"], y=df_kp["kp_index"],
+            name="Kp Index", line=dict(color="#9b59b6"), fill="tozeroy",
+            connectgaps=False
+        ))
     fig3.add_hline(y=5, line_dash="dash", annotation_text="Storm threshold",
                    line_color="orange")
     fig3.update_layout(
-        title="Kp Geomagnetic Index",
+        title="Kp Geomagnetic Index — OMNIWEB Historical (last 31 days of 2023)",
         xaxis_title="Time", yaxis_title="Kp",
-        yaxis=dict(range=[0, 10])  # Kp is strictly 0-9
+        yaxis=dict(range=[0, 10])
     )
     st.plotly_chart(fig3, use_container_width=True)
 
