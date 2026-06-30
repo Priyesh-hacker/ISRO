@@ -11,6 +11,7 @@ DB_PATH = "data/radiation.db"
 
 # NOAA SWPC endpoints
 NOAA_SOLAR_WIND_URL = "https://services.swpc.noaa.gov/json/rtsw/rtsw_wind_1m.json"
+NOAA_MAG_URL        = "https://services.swpc.noaa.gov/json/rtsw/rtsw_mag_1m.json"  # Bz GSM lives here
 NOAA_KP_URL = "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json"
 NOAA_PROTON_URL = "https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json"
 NOAA_ELECTRON_URL = "https://services.swpc.noaa.gov/json/goes/primary/integral-electrons-1-day.json"
