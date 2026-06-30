@@ -10,24 +10,24 @@ from database.supabase_client import upsert_observations
 logger.add("logs/omniweb_fetcher.log", rotation="1 MB")
 
 # OMNIWeb variable codes
-# 13 = Bz GSM (nT)
+# 16 = Bz GSM (nT)
 # 24 = Solar wind speed (km/s)
 # 23 = Proton density (n/cc)
-# 40 = Kp index
-# 41 = Proton flux >10 MeV
-# 43 = Electron flux >2 MeV
+# 38 = Kp*10 index
+# 45 = Proton flux >10 MeV
+# 43 = Proton flux >2 MeV (mapped to electron_flux field as proxy/placeholder)
 
-OMNI_VARS = ["13", "24", "23", "40", "41", "43"]
+OMNI_VARS = ["16", "24", "23", "38", "45", "43"]
 COL_NAMES = ["year", "doy", "hour", "bz", "solar_wind_speed", "density", "kp_index", "proton_flux", "electron_flux"]
 
 # Fill values used by OMNIWeb for missing data
 FILL_VALUES = {
-    "bz": 9999.99,
-    "solar_wind_speed": 99999.9,
-    "density": 999.99,
-    "kp_index": 99,
-    "proton_flux": 99999.99,
-    "electron_flux": 99999.99
+    "bz": 999.9,
+    "solar_wind_speed": 9999.,
+    "density": 999.9,
+    "kp_index": 99.,
+    "proton_flux": 99999.9,
+    "electron_flux": 99999.9
 }
 
 def fetch_year(year: int) -> pd.DataFrame:
@@ -61,6 +61,10 @@ def fetch_year(year: int) -> pd.DataFrame:
         for col, fill in FILL_VALUES.items():
             if col in df.columns:
                 df[col] = df[col].replace(fill, float('nan'))
+
+        # Scale Kp index back (OMNIWeb returns Kp*10)
+        if "kp_index" in df.columns:
+            df["kp_index"] = df["kp_index"] / 10.0
 
         # Build proper timestamp
         df["timestamp"] = pd.to_datetime(
