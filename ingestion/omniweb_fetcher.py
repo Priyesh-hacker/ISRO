@@ -2,8 +2,9 @@ import requests
 import pandas as pd
 from io import StringIO
 from loguru import logger
+import os
 import sys
-sys.path.append("..")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import OMNIWEB_URL, TRAIN_START_YEAR, TRAIN_END_YEAR
 from database.supabase_client import upsert_observations
 
@@ -56,6 +57,11 @@ def fetch_year(year: int) -> pd.DataFrame:
             names=COL_NAMES,
             on_bad_lines='skip'
         )
+
+        # Convert data columns to numeric float types
+        for col in ["bz", "solar_wind_speed", "density", "kp_index", "proton_flux", "electron_flux"]:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
 
         # Replace fill values with NaN
         for col, fill in FILL_VALUES.items():
