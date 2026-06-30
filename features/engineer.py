@@ -24,6 +24,12 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df = df.sort_values("timestamp").reset_index(drop=True)
 
+    # --- CRITICAL FIX: Convert None to float NaN ---
+    numeric_cols = ["bz", "solar_wind_speed", "proton_flux", "kp_index"]
+    for col in numeric_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
     # --- Lag features ---
     for lag in [1, 3, 6, 12, 24]:
         df[f"bz_lag_{lag}h"]           = df["bz"].shift(lag)
@@ -74,7 +80,7 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def get_feature_columns(df: pd.DataFrame) -> list:
-    exclude = ["timestamp", "source", "current_risk"] + \
+    exclude = ["timestamp", "source", "current_risk", "created_at", "id"] + \
               [f"target_{h}h" for h in FORECAST_HORIZONS] + \
               [f"risk_{h}h" for h in FORECAST_HORIZONS]
     return [c for c in df.columns if c not in exclude]
@@ -85,7 +91,7 @@ def load_and_engineer() -> pd.DataFrame:
         logger.error("No data in DB — run omniweb_fetcher.py first")
         return pd.DataFrame()
     df = engineer_features(raw)
-    df = df.dropna()
+    df = df.fillna(0)
     logger.info(f"Final dataset shape: {df.shape}")
     return df
 

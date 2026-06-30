@@ -3,7 +3,6 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 from loguru import logger
 import pandas as pd
-from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -17,7 +16,9 @@ def upsert_observations(df: pd.DataFrame):
         return
     records = df.to_dict(orient="records")
     try:
-        supabase.table("raw_observations").upsert(records).execute()
+        # Batch upsert 1000 rows at a time
+        for i in range(0, len(records), 1000): 
+            supabase.table("raw_observations").upsert(records[i:i+1000]).execute()
         logger.info(f"Upserted {len(records)} observations to Supabase")
     except Exception as e:
         logger.error(f"Supabase upsert failed: {e}")
@@ -74,15 +75,28 @@ def fetch_alerts(limit=20) -> pd.DataFrame:
         return pd.DataFrame()
 
 def fetch_all_observations(limit=100000) -> pd.DataFrame:
-    try:
-        res = supabase.table("raw_observations").select("*").order("timestamp", desc=True).limit(limit).execute()
-        df = pd.DataFrame(res.data)
-        if not df.empty:
-            df = df.sort_values("timestamp")
-        return df
-    except Exception as e:
-        logger.error(f"Fetch observations failed: {e}")
-        return pd.DataFrame()
+    all_data = []
+    start = 0
+    step = 1000
+    while True:
+        try:
+            # Safely paginate to fetch massive amounts of data from Supabase
+            res = supabase.table("raw_observations").select("*").order("timestamp", desc=True).range(start, start + step - 1).execute()
+            data = res.data
+            if not data:
+                break
+            all_data.extend(data)
+            start += step
+            if len(all_data) >= limit:
+                break
+        except Exception as e:
+            logger.error(f"Fetch observations failed: {e}")
+            break
+    
+    df = pd.DataFrame(all_data)
+    if not df.empty:
+        df = df.sort_values("timestamp")
+    return df
 
 def fetch_storm_events() -> pd.DataFrame:
     try:

@@ -1,0 +1,4 @@
+2026-06-29 11:49:55.604 | INFO     | __main__:fetch_geomagnetic_storms:32 - Fetched 62 geomagnetic storm events
+2026-06-29 11:50:11.122 | ERROR    | __main__:fetch_cme_events:61 - CME fetch failed: HTTPSConnectionPool(host='api.nasa.gov', port=443): Read timed out. (read timeout=15)
+2026-06-29 11:50:26.620 | ERROR    | __main__:fetch_solar_flares:87 - FLR fetch failed: HTTPSConnectionPool(host='api.nasa.gov', port=443): Read timed out. (read timeout=15)
+2026-06-29 11:50:26.859 | INFO     | database.supabase_client:insert_storm_events:31 - Inserted 62 storm events to Supabase

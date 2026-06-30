@@ -6,3 +6,11 @@
 2026-06-29 07:56:28.404 | INFO     | __main__:fetch_year:76 - Fetched 8769 rows for 2023
 2026-06-29 07:56:28.523 | INFO     | database.db:insert_observations:65 - Inserted 52585 observations
 2026-06-29 07:56:28.524 | INFO     | __main__:fetch_historical:100 - Total historical rows stored: 52585
+2026-06-29 11:49:06.313 | INFO     | __main__:fetch_year:76 - Fetched 8760 rows for 2018
+2026-06-29 11:49:07.389 | INFO     | __main__:fetch_year:76 - Fetched 8760 rows for 2019
+2026-06-29 11:49:08.411 | INFO     | __main__:fetch_year:76 - Fetched 8784 rows for 2020
+2026-06-29 11:49:09.510 | INFO     | __main__:fetch_year:76 - Fetched 8760 rows for 2021
+2026-06-29 11:49:10.478 | INFO     | __main__:fetch_year:76 - Fetched 8760 rows for 2022
+2026-06-29 11:49:11.534 | INFO     | __main__:fetch_year:76 - Fetched 8760 rows for 2023
+2026-06-29 11:49:26.685 | INFO     | database.supabase_client:upsert_observations:21 - Upserted 52584 observations to Supabase
+2026-06-29 11:49:26.692 | INFO     | __main__:fetch_historical:100 - Total historical rows stored: 52584

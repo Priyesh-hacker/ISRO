@@ -74,7 +74,7 @@ st.subheader("📈 Radiation Forecast")
 
 df_recent = load_recent_data(500)
 if not df_recent.empty:
-    df_eng = engineer_features(df_recent).dropna()
+    df_eng = engineer_features(df_recent).fillna(0)
 
     if not df_eng.empty:
         forecast_cols = st.columns(3)
